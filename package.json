@@ -1,0 +1,20 @@
+{
+    "name": "stride-compressor",
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "stride-compressor",
+    "author": "Oleksandr Popov (github.com/keaukraine/)",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/keaukraine/stride-compressor.git"
+    },
+    "keywords": [],
+    "bugs": {
+        "url": "https://github.com/keaukraine/stride-compressor/issues"
+    },
+    "homepage": "https://github.com/keaukraine/stride-compressor#readme",
+    "dependencies": {
+        "@petamoriken/float16": "^2.0.0",
+        "yargs": "^15.3.1"
+    }
+}
