@@ -55,24 +55,24 @@ fs.readFile(argv._[0], (err, data) => {
         const outStrideStart = i * (outStrideSize + padding);
         let outStrideOffset = 0;
         for (let j = 0; j < strideSize; j++) {
+            const floatValue = input[i * strideSize + j];
             if (types[j] === "float") {
                 const view = new Float32Array(result, outStrideStart + outStrideOffset, 1);
-                view[0] = input[i * strideSize + j];
+                view[0] = floatValue;
                 outStrideOffset += 4;
             } else if (types[j] === "half") {
                 const view = new Float16Array(result, outStrideStart + outStrideOffset, 1);
-                view[0] = input[i * strideSize + j];
+                view[0] = floatValue;
                 outStrideOffset += 2;
             } else if (types[j] === "sbyte") {
                 const view = new Int8Array(result, outStrideStart + outStrideOffset, 1);
                 // Expect value to be in -1...1 range
-                const value = Math.floor(input[i * strideSize + j] * 127);
-                view[0] = input[i * strideSize + j];
+                view[0] = Math.floor(floatValue * 127);
                 outStrideOffset += 1;
             } else if (types[j] === "ubyte") {
                 const view = new Uint8Array(result, outStrideStart + outStrideOffset, 1);
-                // Expect value to be in 0...255 range
-                view[0] = input[i * strideSize + j];
+                // Expect value to be in 0...1 range
+                view[0] = Math.floor(floatValue * 255);
                 outStrideOffset += 1;
             }
         }
