@@ -1,7 +1,32 @@
-const { Float16Array, getFloat16, setFloat16, hfround } = require("@petamoriken/float16");
+const { Float16Array } = require("@petamoriken/float16");
 const yargs = require("yargs");
 const fs = require("fs");
 const path = require("path");
+
+const intValue = -3;
+
+function dec2bin(dec) {
+    let str = (dec >>> 0).toString(2);
+    for (; str.length < 32;) {
+        str = "0" + str;
+    }
+    return str;
+}
+
+const x = intValue & 0x000003FF;
+const y = intValue << 10 & 0x000FFC00;
+const z = intValue << 20 & 0x3FF00000;
+
+console.log(dec2bin(intValue));
+console.log(dec2bin(x));
+console.log(dec2bin(y));
+console.log(dec2bin(z));
+console.log(dec2bin(x | y | z));
+
+console.log("wwzzzzzzzzzzyyyyyyyyyyxxxxxxxxxx")
+
+process.exit(0);
+
 
 /**
  * node src/compressor.js buddha-strides.bin --stride=FFF-hh-hh-hhh
@@ -16,6 +41,11 @@ const types = [];
 let i = 0;
 for (const type of strideFormat) {
     switch (type) {
+        case "p":
+            strideSize += 3;
+            outStrideSize += 4;
+            types[i++] = "packed3";
+            break;
         case "F":
         case "f":
             strideSize += 1;
