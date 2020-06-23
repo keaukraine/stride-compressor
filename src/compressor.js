@@ -41,7 +41,6 @@ for (const type of strideFormat) {
             outStrideSize += 1;
             types[i++] = "padding";
             break;
-        case "F":
         case "p":
             strideSize += 3;
             outStrideSize += 4;
