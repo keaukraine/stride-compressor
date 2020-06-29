@@ -41,6 +41,11 @@ for (const type of strideFormat) {
             outStrideSize += 1;
             types[i++] = "padding";
             break;
+        case "x": // skip one value
+        case "X":
+            strideSize += 1;
+            types[i++] = "skip";
+            break;
         case "p":
             strideSize += 3;
             outStrideSize += 4;
@@ -89,6 +94,8 @@ fs.readFile(argv._[0], (err, data) => {
             const floatValue = input[i * strideSize + j];
             if (type === "padding") {
                 outStrideOffset += 1;
+            } else if (type === "skip") {
+                j++;
             } else if (type === "float") {
                 const view = new Float32Array(result, outStrideStart + outStrideOffset, 1);
                 view[0] = floatValue;
@@ -102,12 +109,18 @@ fs.readFile(argv._[0], (err, data) => {
             } else if (type === "sbyte") {
                 const view = new Int8Array(result, outStrideStart + outStrideOffset, 1);
                 // Expect value to be in -1...1 range
+                if (floatValue < -1 || floatValue > 1) {
+                    console.warn(`Byte value is out of range - ${floatValue}`);
+                }
                 view[0] = Math.floor(floatValue * 127);
                 outStrideOffset += 1;
                 j++;
             } else if (type === "ubyte") {
                 const view = new Uint8Array(result, outStrideStart + outStrideOffset, 1);
                 // Expect value to be in 0...1 range
+                if (floatValue < 0 || floatValue > 1) {
+                    console.warn(`Unsigned byte value is out of range - ${floatValue}`);
+                }
                 view[0] = Math.floor(floatValue * 255);
                 outStrideOffset += 1;
                 j++;

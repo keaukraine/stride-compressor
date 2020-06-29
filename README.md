@@ -21,6 +21,7 @@ Different characters define conversion to different data types:
 - `U`, `u` - normalized unsigned byte
 - `p` - 3 floats packed into `INT_2_10_10_10_REV`
 - `0` - adds 1 empty byte to align data
+- `X`, `x` - skips this value and doesn't add it to output
 
 Any other characters are ignored and can be used for formatting.
 
