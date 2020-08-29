@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const { Float16Array } = require("@petamoriken/float16");
 const yargs = require("yargs");
 const fs = require("fs");

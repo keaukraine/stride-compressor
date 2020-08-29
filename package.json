@@ -1,6 +1,6 @@
 {
     "name": "stride-compressor",
-    "version": "0.1.0",
+    "version": "0.1.2",
     "license": "MIT",
     "description": "stride-compressor",
     "author": "Oleksandr Popov (github.com/keaukraine/)",
@@ -16,5 +16,6 @@
     "dependencies": {
         "@petamoriken/float16": "^2.0.0",
         "yargs": "^15.3.1"
-    }
+    },
+    "bin": "src/compressor.js"
 }
