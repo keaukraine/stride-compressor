@@ -31,6 +31,7 @@ function pack3Floats(x, y, z) {
 }
 
 const argv = yargs.argv;
+const align = argv.alignment === undefined ? true : argv.alignment;
 const strideFormat = argv.stride;
 let strideSize = 0; // Stride size in floats (items count)
 let outStrideSize = 0; // Output stride size in bytes
@@ -80,7 +81,9 @@ for (const type of strideFormat) {
     }
 }
 
-const padding = (Math.ceil(outStrideSize / 4) * 4) - outStrideSize;
+const padding = align
+    ? (Math.ceil(outStrideSize / 4) * 4) - outStrideSize
+    : 0;
 
 console.log(`Original stride size ${strideSize * 4} bytes; new stride size ${outStrideSize + padding} bytes (last ${padding} bytes are empty).`);
 
