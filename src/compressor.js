@@ -21,12 +21,22 @@ function dec2bin(dec) {
 }
 
 /**
- * Packs 3 floats to INT_2_10_10_10_REV structure.
+ * Packs 3 floats to INT_2_10_10_10_REV structure. Normalizes values.
  */
-function pack3Floats(x, y, z) {
+function pack3FloatsNormalized(x, y, z) {
     const px = (Math.floor(x * 511)) & 0x000003FF;
     const py = (Math.floor(y * 511)) << 10 & 0x000FFC00;
     const pz = (Math.floor(z * 511)) << 20 & 0x3FF00000;
+    return px | py | pz;
+}
+
+/**
+ * Packs 3 floats to INT_2_10_10_10_REV structure.
+ */
+function pack3Floats(x, y, z) {
+    const px = (Math.floor(x)) & 0x000003FF;
+    const py = (Math.floor(y)) << 10 & 0x000FFC00;
+    const pz = (Math.floor(z)) << 20 & 0x3FF00000;
     return px | py | pz;
 }
 
@@ -50,6 +60,11 @@ for (const type of strideFormat) {
             types[i++] = "skip";
             break;
         case "p":
+            strideSize += 3;
+            outStrideSize += 4;
+            types[i++] = "packed3-normalized";
+            break;
+        case "P":
             strideSize += 3;
             outStrideSize += 4;
             types[i++] = "packed3";
@@ -129,6 +144,21 @@ fs.readFile(argv._[0], (err, data) => {
                 view[0] = Math.floor(floatValue * 255);
                 outStrideOffset += 1;
                 j++;
+            } else if (type === "packed3-normalized") {
+                const temp = new Uint32Array(1);
+                const tempView = new Uint8Array(temp.buffer);
+                const view = new Uint8Array(result, outStrideStart + outStrideOffset, 4);
+                temp[0] = pack3FloatsNormalized(
+                    input[i * strideSize + j + 0],
+                    input[i * strideSize + j + 1],
+                    input[i * strideSize + j + 2]
+                ) >>> 0;
+                view[0] = tempView[0];
+                view[1] = tempView[1];
+                view[2] = tempView[2];
+                view[3] = tempView[3];
+                outStrideOffset += 4;
+                j += 3;
             } else if (type === "packed3") {
                 const temp = new Uint32Array(1);
                 const tempView = new Uint8Array(temp.buffer);
