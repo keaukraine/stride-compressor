@@ -31,13 +31,14 @@ function pack3FloatsNormalized(x, y, z) {
 }
 
 /**
- * Packs 3 floats to INT_2_10_10_10_REV structure.
+ * Packs 3 floats to INT_2_10_10_10_REV structure. Writes 1 to w component.
  */
 function pack3Floats(x, y, z) {
     const px = (Math.floor(x)) & 0x000003FF;
     const py = (Math.floor(y)) << 10 & 0x000FFC00;
     const pz = (Math.floor(z)) << 20 & 0x3FF00000;
-    return px | py | pz;
+    const pw = 1 << 30;
+    return px | py | pz | pw;
 }
 
 const argv = yargs.argv;
