@@ -47,6 +47,10 @@ const strideFormat = argv.stride;
 let strideSize = 0; // Stride size in floats (items count)
 let outStrideSize = 0; // Output stride size in bytes
 const types = [];
+const scale = parseFloat(argv.scale);
+if (isNaN(scale)) {
+    scale = 1.0;
+}
 
 let i = 0;
 for (const type of strideFormat) {
@@ -82,8 +86,12 @@ for (const type of strideFormat) {
             outStrideSize += 2;
             types[i++] = "half";
             break;
-        case "B":
         case "b":
+            strideSize += 1;
+            outStrideSize += 1;
+            types[i++] = "sbyte-norm";
+            break;
+        case "B":
             strideSize += 1;
             outStrideSize += 1;
             types[i++] = "sbyte";
@@ -92,7 +100,7 @@ for (const type of strideFormat) {
         case "u":
             strideSize += 1;
             outStrideSize += 1;
-            types[i++] = "ubyte";
+            types[i++] = "ubyte-norm";
             break;
     }
 }
@@ -127,22 +135,32 @@ fs.readFile(argv._[0], (err, data) => {
                 view[0] = floatValue;
                 outStrideOffset += 2;
                 j++;
-            } else if (type === "sbyte") {
+            } else if (type === "sbyte-norm") {
                 const view = new Int8Array(result, outStrideStart + outStrideOffset, 1);
                 // Expect value to be in -1...1 range
                 if (floatValue < -1 || floatValue > 1) {
                     console.warn(`Byte value is out of range - ${floatValue}`);
                 }
-                view[0] = Math.floor(floatValue * 127);
+                view[0] = Math.round(floatValue * 127);
                 outStrideOffset += 1;
                 j++;
-            } else if (type === "ubyte") {
+            } else if (type === "sbyte") {
+                const view = new Int8Array(result, outStrideStart + outStrideOffset, 1);
+                // Scale value, expect it to fit in -127...127 range
+                const scaledValue = floatValue * scale;
+                if (scaledValue < -127 || scaledValue > 127) {
+                    console.warn(`Byte value is out of range - ${floatValue} (scale is ${scale})`);
+                }
+                view[0] = Math.round(scaledValue);
+                outStrideOffset += 1;
+                j++;
+            } else if (type === "ubyte-norm") {
                 const view = new Uint8Array(result, outStrideStart + outStrideOffset, 1);
                 // Expect value to be in 0...1 range
                 if (floatValue < 0 || floatValue > 1) {
                     console.warn(`Unsigned byte value is out of range - ${floatValue}`);
                 }
-                view[0] = Math.floor(floatValue * 255);
+                view[0] = Math.round(floatValue * 255);
                 outStrideOffset += 1;
                 j++;
             } else if (type === "packed3-normalized") {
