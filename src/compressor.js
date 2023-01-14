@@ -47,7 +47,7 @@ const strideFormat = argv.stride;
 let strideSize = 0; // Stride size in floats (items count)
 let outStrideSize = 0; // Output stride size in bytes
 const types = [];
-const scale = parseFloat(argv.scale);
+let scale = parseFloat(argv.scale);
 if (isNaN(scale)) {
     scale = 1.0;
 }
