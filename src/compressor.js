@@ -97,6 +97,10 @@ for (const type of strideFormat) {
             types[i++] = "sbyte";
             break;
         case "U":
+            strideSize += 1;
+            outStrideSize += 1;
+            types[i++] = "ubyte";
+            break;
         case "u":
             strideSize += 1;
             outStrideSize += 1;
@@ -120,7 +124,8 @@ fs.readFile(argv._[0], (err, data) => {
         let outStrideOffset = 0;
         let j = 0;
         for (const type of types) {
-            const floatValue = input[i * strideSize + j];
+            let floatValue = input[i * strideSize + j];
+            // console.log(4*(i * strideSize + j), type, floatValue);
             if (type === "padding") {
                 outStrideOffset += 1;
             } else if (type === "skip") {
@@ -161,6 +166,18 @@ fs.readFile(argv._[0], (err, data) => {
                     console.warn(`Unsigned byte value is out of range - ${floatValue}`);
                 }
                 view[0] = Math.round(floatValue * 255);
+                outStrideOffset += 1;
+                j++;
+            } else if (type === "ubyte") {
+                const view = new Uint8Array(result, outStrideStart + outStrideOffset, 1);
+                // Expect value to be in 0...255 range
+                if (floatValue < 0) { // strange fix for negative values
+                    floatValue = 1 - floatValue;
+                }
+                if (floatValue < 0 || floatValue > 255) {
+                    console.warn(`Unsigned byte value is out of range - ${floatValue}`);
+                }
+                view[0] = Math.round(floatValue);
                 outStrideOffset += 1;
                 j++;
             } else if (type === "packed3-normalized") {
