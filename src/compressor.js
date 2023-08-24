@@ -125,7 +125,6 @@ fs.readFile(argv._[0], (err, data) => {
         let j = 0;
         for (const type of types) {
             let floatValue = input[i * strideSize + j];
-            // console.log(4*(i * strideSize + j), type, floatValue);
             if (type === "padding") {
                 outStrideOffset += 1;
             } else if (type === "skip") {
