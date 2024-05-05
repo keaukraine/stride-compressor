@@ -6,7 +6,7 @@ const path = require("path");
 
 /**
  * Usage:
- * node src/combine.js name --frames=10 --width=1024 --size=[6|12]
+ * node src/combine.js name --frames=10 --width=1024 --size=[6|12|8|16]
  */
 
 const argv = yargs.argv;
@@ -52,5 +52,9 @@ for (let chunk = 0; chunk < chunks; chunk++) {
 }
 
 const parsedPath = path.parse(name);
-const outputFile = path.join(parsedPath.dir, parsedPath.name + ".rgb.fp" + (texelSize === 6 ? "16" : "32"));
+
+const format = (texelSize === 6 || texelSize === 12) ? "rgb" : "rgba";
+const type = (texelSize === 6 || texelSize === 8) ? "16" : "32";
+
+const outputFile = path.join(parsedPath.dir, parsedPath.name + `.${format}.fp${type}`);
 fs.writeFileSync(outputFile, Buffer.from(resultArray));
